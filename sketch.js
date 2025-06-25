@@ -399,7 +399,7 @@ function updateCurrentImage(k) {
     case 'a':
       currentImg = aImg;
       break;
-    case 'w':
+    case 's':
       currentImg = sImg;
       break;
     case 'd':
