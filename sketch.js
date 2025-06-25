@@ -45,6 +45,11 @@ let showImg36 = false;
 let img36Alpha = 0;
 let img36StartTime = null;
 
+// 添加新的变量来跟踪所有动画是否结束
+let allAnimationsComplete = false;
+let img36FullyVisible = false;
+let img36FullyVisibleTime = null;
+
 let cols = 7;
 let spacingX = 300;
 let spacingY = 60;
@@ -302,9 +307,31 @@ function draw() {
     tint(255, img36Alpha);
     image(img36, 0, 0, width, height);
     noTint();
+    
+    // 检查img36是否已经完全显示
+    if (img36Alpha >= 255 && !img36FullyVisible) {
+      img36FullyVisible = true;
+      img36FullyVisibleTime = millis();
+    }
+  }
+
+  // 检查所有动画是否完成（img36完全显示后等待2秒）
+  if (img36FullyVisible && img36FullyVisibleTime !== null && 
+      millis() - img36FullyVisibleTime > 2000 && !allAnimationsComplete) {
+    allAnimationsComplete = true;
   }
 
   image(currentImg, 0, 0, width, height);
+  
+  // 如果所有动画完成，显示点击提示（可选）
+  if (allAnimationsComplete) {
+    // 可以在这里添加视觉提示，比如闪烁的文字或图标
+    // 例如：
+    // fill(255, 255, 255, 150 + 100 * sin(millis() * 0.01));
+    // textAlign(CENTER);
+    // textSize(32);
+    // text("点击屏幕继续", width/2, height - 50);
+  }
 }
 
 function drawVerticalLines() {
@@ -356,7 +383,7 @@ function updateAndDrawHorizontalLines() {
 
 function keyPressed() {
   updateCurrentImage(key);
-  if (key === 'w' || key === 'W') {
+  if (key === 's' || key === 'S') {
     startFadeOut31 = true;
   }
 }
@@ -369,19 +396,26 @@ function keyReleased() {
 
 function updateCurrentImage(k) {
   switch (k.toLowerCase()) {
-    case 'w':
+    case 'a':
       currentImg = aImg;
       break;
-    case 's':
+    case 'w':
       currentImg = sImg;
       break;
-    case 's':
+    case 'd':
       currentImg = dImg;
       break;
   }
 }
 
 function mousePressed() {
+  // 检查是否所有动画已完成，如果是则跳转链接
+  if (allAnimationsComplete) {
+    window.location.href = 'https://springtaylor.github.io/middle2';
+    return; // 直接返回，不执行下面的原有逻辑
+  }
+
+  // 原有的鼠标点击逻辑
   if (showPopup && !hidePopup && popupScale > 0) {
     let popupX = width / 2;
     let popupY = height / 2;
@@ -396,6 +430,13 @@ function mousePressed() {
 }
 
 function doubleClicked() {
+  // 如果所有动画完成，双击也可以跳转
+  if (allAnimationsComplete) {
+    window.location.href = 'https://springtaylor.github.io/middle2';
+    return;
+  }
+
+  // 原有的双击逻辑
   if (showImg5) {
     let d = dist(mouseX, mouseY, 510, 930);
     if (d <= 90) {
